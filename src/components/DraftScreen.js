@@ -12,20 +12,17 @@ export default function DraftScreen({ draftedTeam, onRecruit, formation, modoMan
 
     const slotsCompativeis = useMemo(() => getCompatibleSlots(selectedDraftPlayer), [selectedDraftPlayer, draftedTeam, formation]);
 
-    const handlePlayerClick = (player) => {
-        const vagas = getCompatibleSlots(player);
+  const handlePlayerCardClick = (player) => {
+  // 1. Validação de segurança: se o jogador já estiver no elenco, não faz nada
+  if (draftedTeam.find(p => p.id === player.id)) return;
 
-        if (vagas.length === 0) return;
+  // 2. Define o jogador como selecionado para disparar o efeito de destaque no campo
+  setSelectedDraftPlayer(player);
 
-        // Injeção automática se apenas 1 vaga disponível
-        if (vagas.length === 1) {
-            onRecruit(player, vagas[0].originalIndex);
-            setSelectedDraftPlayer(null);
-        } else {
-            // Habilita destaque manual
-            setSelectedDraftPlayer(player);
-        }
-    };
+  // 3. REMOVA qualquer alert() daqui! 
+  // O fluxo de destaque visual (piscar slots) já deve estar ocorrendo pelo estado setado acima.
+  console.log("Jogador selecionado, aguardando clique no slot:", player.nome);
+};
 
     return (
         <div className="flex flex-col gap-4 p-4">
