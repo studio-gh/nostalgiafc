@@ -1,8 +1,15 @@
 <!-- index.html -->
+<script type="module" src="./src/data/database.js"></script>
+
+<script type="module" src="./src/components/MatchEngine.js"></script>
+<script type="module" src="./src/components/CardJogador.js"></script>
+<script type="module" src="./src/components/Poster.js"></script>
+
 <script type="module">
-  // 1. Importa a constante do banco de dados que está na pasta do GitHub
   import { CLUBES } from './src/data/database.js';
-  
-  // 2. Disponibiliza globalmente para que o restante do app possa ler
+  // Disponibiliza globalmente se necessário para o restante do app
   window.CLUBES = CLUBES;
+
+  // Aqui você inicializa o seu App React
+  // Exemplo: ReactDOM.render(<NostalgiaFCApp />, document.getElementById('app-root'));
 </script>
