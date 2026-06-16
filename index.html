@@ -1,27 +1,26 @@
 <script type="text/babel">
-    import DraftScreen from './src/components/DraftScreen.js';
-    import VestiarioScreen from './src/components/VestiarioScreen.js';
-    import MatchEngine from './src/components/MatchEngine.js'; // Importação perfeita!
+    // 1. Extraia os componentes do objeto window para variáveis locais
+    // Isso é obrigatório porque o JSX precisa que o nome do componente 
+    // comece com letra maiúscula e esteja acessível no escopo.
+    const MatchEngine = window.MatchEngine;
+    const DraftScreen = window.DraftScreen;
+    const VestiarioScreen = window.VestiarioScreen;
 
     function NostalgiaFCApp() {
-        // ... Estados globais ...
+        // ... estados globais ...
 
         return (
             <div className="min-h-screen bg-creme font-sans text-obsidian p-4">
-                {/* Header Editorial Estático */}
-
-                {/* TELA 5: ENGINE DE SIMULAÇÃO DA PARTIDA */}
+                {/* Agora o JSX reconhece a constante MatchEngine local */}
                 {currentScreen === SCREENS.SIMULADOR && (
                     <MatchEngine 
                         userTeamName={userTeamName}
                         userTeamOVR={calculateTeamOVR()}
                         draftedTeam={draftedTeam}
                         opponent={isKnockout ? getCurrentKnockoutOpponent() : campaignMatches[currentMatchIndex]}
-                        onMatchFinished={handleMatchFinishedCallback} // Callback para computar pontos e salvar tabela
+                        onMatchFinished={handleMatchFinishedCallback}
                     />
                 )}
-
-                {/* Demais Telas... */}
             </div>
         );
     }
