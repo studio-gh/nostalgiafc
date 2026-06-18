@@ -1,0 +1,7 @@
+[build]
+  # Deixe o base vazio ou como "." para usar a raiz do seu projeto
+  base = "" 
+  # O comando de build do React
+  command = "npm run build"
+  # A pasta onde o React gera o site final
+  publish = "build"
