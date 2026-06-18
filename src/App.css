@@ -30,3 +30,32 @@ button:active {
   background-color: #FFF;
   color: #000;
 }
+/* Espaçamento Global */
+h1 {
+  margin-bottom: 60px; /* Mais espaço entre o título e os botões */
+  text-align: center;
+}
+
+/* Botão Genérico (Base) */
+button {
+  width: 100%;
+  padding: 20px; /* Padding maior para facilitar o toque mobile */
+  margin-bottom: 25px; /* Espaçamento entre os botões */
+  font-weight: bold;
+  font-size: 1.2rem;
+  border: 4px solid #fff;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+/* Identidade da Itália (Ex: Azul Itália / Dourado) */
+.btn-italia {
+  background-color: #0066cc; 
+  color: #fff;
+}
+
+/* Identidade da Espanha (Ex: Amarelo La Liga / Vermelho) */
+.btn-espanha {
+  background-color: #ffcc00;
+  color: #c40000;
+}

@@ -81,5 +81,24 @@ function App() {
     </div>
   );
 }
+{faseJogo === 'SELECAO_LIGA' && (
+  <div className="retro-menu">
+    <h1>NOSTALGIA FC</h1>
+    
+    <button 
+      className="btn-italia" 
+      onClick={() => selecionarLiga('ITÁLIA')}
+    >
+      SÉRIE A (ITÁLIA)
+    </button>
+
+    <button 
+      className="btn-espanha" 
+      onClick={() => selecionarLiga('ESPANHA')}
+    >
+      LA LIGA (ESPANHA)
+    </button>
+  </div>
+)}
 
 export default App;
