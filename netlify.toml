@@ -1,6 +1,4 @@
 [build]
-  # Forçamos o build a ocorrer na raiz, mas sendo explícitos
-  base = "."
   command = "npm install && npm run build"
   publish = "build"
 
