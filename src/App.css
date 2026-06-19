@@ -7,168 +7,98 @@
   --nfc-body: rgba(255, 255, 255, 0.55);
   --nfc-muted: #888888;
   --nfc-rule: #222222;
-  
-  /* Cores por posição */
-  --gk: #5BA8E0;
-  --def: #5BD68C;
-  --mid: #F9D316;
-  --atk: #F94C4C;
+  --field-green: #1b4d22;
+  --field-line: rgba(255, 255, 255, 0.25);
 }
 
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+/* Mantendo a base anterior */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; padding: 0; background-color: var(--nfc-bg); color: var(--nfc-fg); font-family: 'Barlow', sans-serif; }
+.game-container { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--nfc-bg); padding: 20px; display: flex; flex-direction: column; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.nfc-logo { display: flex; align-items: center; gap: 10px; }
+.nfc-logo .crest { width: 34px; height: 34px; border-radius: 6px; background: linear-gradient(135deg, var(--nfc-accent), #c97200); display: flex; align-items: center; justify-content: center; font-family: 'Kanit'; font-weight: 900; color: #0D0D0D; }
+.nfc-logo .word { font-family: 'Kanit'; font-weight: 900; font-size: 17px; }
+.nfc-logo .word span { color: var(--nfc-accent); }
 
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--nfc-bg);
-  color: var(--nfc-fg);
-  font-family: 'Barlow', sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
+.home-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; gap: 12px; }
+.home-title { font-family: 'Kanit'; font-weight: 900; font-size: 36px; text-transform: uppercase; margin: 0; }
+.btn-primary { background: var(--nfc-accent); color: #0D0D0D; font-family: 'Barlow Condensed'; font-weight: 900; font-size: 16px; text-transform: uppercase; border: none; border-radius: 12px; padding: 16px; width: 100%; cursor: pointer; box-shadow: 0 4px 12px rgba(249, 154, 22, 0.2); }
 
-.game-container {
-  max-width: 480px;
-  margin: 0 auto;
-  min-height: 100vh;
+/* CONTROLES TÁTICOS */
+.tactic-selector { display: flex; gap: 10px; margin-bottom: 12px; justify-content: center; }
+.btn-tactic { background: var(--nfc-bg-2); border: 1.5px solid var(--nfc-rule); color: var(--nfc-fg); padding: 6px 16px; border-radius: 20px; font-family: 'Barlow Condensed'; font-weight: 700; cursor: pointer; }
+.btn-tactic.active { background: var(--nfc-accent); color: #0D0D0D; border-color: var(--nfc-accent); }
+
+.hud-info { display: flex; justify-content: space-between; background: var(--nfc-bg-2); border: 1.5px solid var(--nfc-rule); padding: 10px 16px; border-radius: 12px; margin-bottom: 12px; font-family: 'Barlow Condensed'; font-size: 16px; }
+.hud-info span { color: var(--nfc-accent); font-weight: bold; }
+
+/* CAMPO DE FUTEBOL (Mecânica 7a0) */
+.soccer-field {
+  background: var(--field-green);
+  border: 2px solid var(--field-line);
+  border-radius: 16px;
   position: relative;
-  background: var(--nfc-bg);
-  padding: 24px 20px 32px;
+  padding: 16px 10px;
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
+}
+/* Linha de meio campo simulada */
+.soccer-field::before {
+  content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--field-line); transform: translateY(-50%);
 }
 
-/* TOP BAR */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
+.field-row { display: flex; justify-content: space-around; width: 100%; z-index: 2; }
 
-.nfc-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.nfc-logo .crest {
-  width: 34px;
-  height: 34px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--nfc-accent), #c97200);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Kanit';
-  font-weight: 900;
-  font-size: 16px;
-  color: #0D0D0D;
-}
-
-.nfc-logo .word {
-  font-family: 'Kanit';
-  font-weight: 900;
-  font-size: 17px;
-  letter-spacing: .01em;
-}
-
-.nfc-logo .word span {
-  color: var(--nfc-accent);
-}
-
-/* SCREEN BASES */
-.home-hero {
-  flex: 1;
+/* BOTÃO DE JOGADOR / SLOT */
+.player-slot {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px dashed var(--nfc-accent);
+  color: var(--nfc-fg);
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  text-align: center;
-  gap: 8px;
-}
-
-.home-tag {
-  font-family: 'Barlow Condensed';
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: .3em;
-  color: var(--nfc-accent);
-  text-transform: uppercase;
-}
-
-.home-title {
-  font-family: 'Kanit';
-  font-weight: 900;
-  font-size: 42px;
-  line-height: 0.95;
-  text-transform: uppercase;
-  margin: 14px 0 6px;
-}
-
-.home-sub {
-  font-family: 'Barlow';
-  font-size: 15px;
-  color: var(--nfc-body);
-  line-height: 1.5;
-  max-width: 320px;
-  margin: 0 auto;
-}
-
-/* BOTÕES PREMIUM */
-.btn-primary {
-  background: var(--nfc-accent);
-  color: #0D0D0D;
-  font-family: 'Barlow Condensed';
-  font-weight: 900;
-  font-size: 17px;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  border: none;
-  border-radius: 14px;
-  padding: 18px;
-  width: 100%;
-  margin-top: 15px;
-  box-shadow: 0 8px 24px rgba(249, 154, 22, 0.25);
+  font-size: 11px;
   cursor: pointer;
-  transition: transform .15s ease;
+  padding: 4px;
+  text-align: center;
 }
-
-.btn-primary:active {
-  transform: scale(0.97);
+.player-slot.filled {
+  border: 2px solid var(--nfc-accent);
+  background: var(--nfc-bg-2);
+  border-radius: 8px; /* Muda para formato de "card" pequeno quando preenchido */
 }
+.player-slot .pos-tag { font-weight: bold; color: var(--nfc-accent); font-size: 10px; text-transform: uppercase; }
+.player-slot .p-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+.player-slot .p-cost { font-size: 9px; opacity: 0.7; }
 
-.btn-liga-italia {
-  background: #0066cc;
-  color: #fff;
-}
-
-.btn-liga-espanha {
-  background: #ffcc00;
-  color: #c40000;
-}
-
-/* DRAFT STUFF */
-.draft-stage {
-  width: 100%;
+/* BANCO DE RESERVAS */
+.substitutes-container {
   background: var(--nfc-bg-2);
   border: 1.5px solid var(--nfc-rule);
-  border-radius: 16px;
-  padding: 20px;
-  margin-top: 15px;
-  text-align: center;
+  border-radius: 14px;
+  padding: 12px;
 }
+.substitutes-title { font-family: 'Barlow Condensed'; font-weight: 700; size: 14px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--nfc-muted); }
+.substitutes-grid { display: flex; justify-content: space-between; gap: 6px; }
 
-.draft-info {
-  font-family: 'Barlow Condensed';
-  font-size: 18px;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+/* PAINEL DE OPÇÕES DO DRAFT (RODRIGO / MODAL RÁPIDO) */
+.draft-options-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;
 }
-
-.draft-info span {
-  color: var(--nfc-accent);
-  font-weight: bold;
+.draft-modal {
+  background: var(--nfc-bg-2); border: 2px solid var(--nfc-rule); border-radius: 16px; padding: 20px; width: 100%; max-width: 400px;
 }
+.draft-modal h3 { font-family: 'Kanit'; margin-top: 0; text-transform: uppercase; color: var(--nfc-accent); }
+.option-card {
+  background: #222; border: 1.5px solid #333; border-radius: 10px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+}
+.option-card:hover { border-color: var(--nfc-accent); }
+.btn-close-modal { background: none; border: none; color: var(--nfc-muted); cursor: pointer; float: right; font-weight: bold; }

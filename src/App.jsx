@@ -1,58 +1,105 @@
 import React, { useState } from 'react';
-import { executarSorteioDraft, gerarCopaAdversarios } from './motor';
+import { gerarCopaAdversarios } from './motor'; 
 import './App.css';
 
-// Lista de posições que o usuário precisa preencher
-const posicoesOrdem = ['GOL', 'ZAG', 'ZAG', 'MEI', 'MEI', 'ATA', 'ATA'];
 const ORCAMENTO_INICIAL = 100;
 
+// Definição das posições por formação técnica
+const FORMACOES = {
+  '4-4-2': {
+    ataque: ['ATA', 'ATA'],
+    meio: ['MEI', 'MEI', 'MEI', 'MEI'],
+    defesa: ['ZAG', 'ZAG', 'ZAG', 'ZAG'],
+    goleiro: ['GOL']
+  },
+  '4-3-3': {
+    ataque: ['ATA', 'ATA', 'ATA'],
+    meio: ['MEI', 'MEI', 'MEI'],
+    defesa: ['ZAG', 'ZAG', 'ZAG', 'ZAG'],
+    goleiro: ['GOL']
+  }
+};
+
 function App() {
-  // Estados do Jogo
   const [faseJogo, setFaseJogo] = useState('SELECAO_LIGA');
   const [ligaSelecionada, setLigaSelecionada] = useState(null);
   const [orcamento, setOrcamento] = useState(ORCAMENTO_INICIAL);
-  const [timeUsuario, setTimeUsuario] = useState([]);
-  const [posicaoAtualIndex, setPosicaoAtualIndex] = useState(0);
-  const [listaJogadoresGlobal, setListaJogadoresGlobal] = useState([]); // Populado com seus dados de jogadores.js
+  const [formacao, setFormacao] = useState('4-4-2');
+  
+  // Estrutura de Elenco em aberto
+  const [titulares, setTitulares] = useState({});
+  const [reservas, setReservas] = useState(Array(5).fill(null));
 
-  // 1. Iniciar o Draft após escolher a Liga
+  // Controle do Modal de Escolha do Jogador
+  const [modalAberto, setModalAberto] = useState(false);
+  const [slotAlvo, setSlotAlvo] = useState(null); 
+  const [opcoesSorteadas, setOpcoesSorteadas] = useState([]);
+
   const selecionarLiga = (liga) => {
     setLigaSelecionada(liga);
     setFaseJogo('DRAFT');
   };
 
-  // 2. Lógica de Escolha (Chamada após o sorteio)
-  const processarEscolhaJogador = (jogadorSorteado) => {
-    // Verifica a trava de Salary Cap
-    if (jogadorSorteado.cost > orcamento) {
-      alert("Orçamento insuficiente para este jogador!");
+  // Clicar em qualquer slot do campo ou reserva dispara o sorteio direto
+  const abrirSorteioParaSlot = (tipo, id, posicao) => {
+    setSlotAlvo({ tipo, id, posicao });
+    
+    // MOCK provisório simulando opções baseadas na posição clicada
+    const bancoMock = [
+      { id: 1, name: 'Ronaldo', cost: 25, rating: 94, position: 'ATA' },
+      { id: 2, name: 'Zidane', cost: 22, rating: 92, position: 'MEI' },
+      { id: 3, name: 'Maldini', cost: 20, rating: 93, position: 'ZAG' },
+      { id: 4, name: 'Buffon', cost: 18, rating: 90, position: 'GOL' },
+      { id: 5, name: 'Figo', cost: 19, rating: 89, position: 'MEI' },
+      { id: 6, name: 'Raúl', cost: 21, rating: 90, position: 'ATA' },
+      { id: 7, name: 'Hierro', cost: 16, rating: 87, position: 'ZAG' },
+      { id: 8, name: 'Casillas', cost: 17, rating: 88, position: 'GOL' }
+    ].filter(j => j.position === posicao);
+
+    const prontas = bancoMock.length > 0 ? bancoMock : [
+      { id: 99, name: `Craque ${posicao}`, cost: 12, rating: 85, position: posicao }
+    ];
+
+    setOpcoesSorteadas(prontas);
+    setModalAberto(true);
+  };
+
+  const escolherJogador = (jogador) => {
+    if (jogador.cost > orcamento) {
+      alert("Orçamento insuficiente!");
       return;
     }
 
-    // Adiciona ao time e desconta o orçamento
-    const novoTime = [...timeUsuario, jogadorSorteado];
-    setTimeUsuario(novoTime);
-    setOrcamento(orcamento - jogadorSorteado.cost);
+    setOrcamento(prev => prev - jogador.cost);
 
-    // Avança no Loop de Posições
-    if (posicaoAtualIndex + 1 < posicoesOrdem.length) {
-      setPosicaoAtualIndex(posicaoAtualIndex + 1);
+    if (slotAlvo.tipo === 'titular') {
+      setTitulares(prev => ({ ...prev, [slotAlvo.id]: jogador }));
     } else {
-      // Draft Finalizado com Sucesso
-      finalizarDraft(novoTime);
+      const novosReservas = [...reservas];
+      novosReservas[slotAlvo.id] = jogador;
+      setReservas(novosReservas);
     }
+
+    setModalAberto(false);
+    setSlotAlvo(null);
   };
 
-  const finalizarDraft = (timeFinal) => {
-    // Chama o motor para gerar a Copa filtrando pela liga correta
-    const adversarios = gerarCopaAdversarios(ligaSelecionada);
-    console.log("Adversários Gerados para a Copa:", adversarios);
-    setFaseJogo('MENU_PRINCIPAL');
+  const verificarFimDoDraft = () => {
+    const totalTitularesEsperados = 11; 
+    const preenchidosTitulares = Object.keys(titulares).length;
+    const preenchidosReservas = reservas.filter(r => r !== null).length;
+
+    if (preenchidosTitulares === totalTitularesEsperados && preenchidosReservas === 5) {
+      const idLigas = ligaSelecionada === 'ITÁLIA' ? 'Série A' : 'La Liga';
+      gerarCopaAdversarios(idLigas);
+      setFaseJogo('MENU_PRINCIPAL');
+    } else {
+      alert(`Ainda restam slots vazios! Preencha os 11 titulares e os 5 reservas antes de avançar.`);
+    }
   };
 
   return (
     <div className="game-container">
-      {/* Topbar Padrão Nostalgia FC */}
       <header className="topbar">
         <div className="nfc-logo">
           <div className="crest">N</div>
@@ -65,67 +112,132 @@ function App() {
         <div className="home-hero">
           <span className="home-tag">Temporada Ativa</span>
           <h1 className="home-title">Escolha a sua<br/>Liga Clássica</h1>
-          <p className="home-sub">Monte seu esquadrão lendário dos anos 90 e 2000.</p>
           
-          <button 
-            className="btn-primary btn-liga-italia" 
-            onClick={() => selecionarLiga('ITÁLIA')}
-          >
+          <button className="btn-primary" style={{backgroundColor: '#0066cc', color: '#fff'}} onClick={() => selecionarLiga('ITÁLIA')}>
             SÉRIE A (ITÁLIA)
           </button>
-
-          <button 
-            className="btn-primary btn-liga-espanha" 
-            onClick={() => selecionarLiga('ESPANHA')}
-          >
+          <button className="btn-primary" style={{backgroundColor: '#ffcc00', color: '#c40000', marginTop: '12px'}} onClick={() => selecionarLiga('ESPANHA')}>
             LA LIGA (ESPANHA)
           </button>
         </div>
       )}
 
-      {/* TELA 2: ENGINE DE DRAFT */}
+      {/* TELA 2: QUADRO TÁTICO DE DRAFT */}
       {faseJogo === 'DRAFT' && (
-        <div className="home-hero">
-          <span className="home-tag">Liga: {ligaSelecionada}</span>
-          <h1 className="home-title">Draft de Elenco</h1>
-          
-          <div className="draft-stage">
-            <div className="draft-info">
-              Próxima Posição: <span>{posicoesOrdem[posicaoAtualIndex]}</span>
-            </div>
-            <div className="draft-info">
-              Orçamento: <span>{orcamento}M</span>
-            </div>
-            
-            <button 
-              className="btn-primary"
-              onClick={() => executarSorteioDraft(
-                orcamento, 
-                listaJogadoresGlobal, 
-                (j) => console.log("Sorteando:", j.name), 
-                () => processarEscolhaJogador({name: "Jogador X", cost: 10, posicao: posicoesOrdem[posicaoAtualIndex]}) // Exemplo de Mock do motor
-              )}
-            >
-              Sortear Jogador
-            </button>
+        <div>
+          <div className="tactic-selector">
+            <button className={`btn-tactic ${formacao === '4-4-2' ? 'active' : ''}`} onClick={() => setFormacao('4-4-2')}>4-4-2</button>
+            <button className={`btn-tactic ${formacao === '4-3-3' ? 'active' : ''}`} onClick={() => setFormacao('4-3-3')}>4-3-3</button>
           </div>
+
+          <div className="hud-info">
+            <div>Liga: <span>{ligaSelecionada}</span></div>
+            <div>Orçamento: <span>{orcamento}M</span></div>
+          </div>
+
+          {/* CAMPO DE FUTEBOL EM GREEN */}
+          <div className="soccer-field">
+            {/* Linha de Ataque */}
+            <div className="field-row">
+              {FORMACOES[formacao].ataque.map((pos, i) => {
+                const key = `ataque_${i}`;
+                const j = titulares[key];
+                return (
+                  <div key={key} className={`player-slot ${j ? 'filled' : ''}`} onClick={() => abrirSorteioParaSlot('titular', key, pos)}>
+                    <span className="pos-tag">{pos}</span>
+                    {j ? <><span className="p-name">{j.name}</span><span className="p-cost">{j.cost}M</span></> : <span>+</span>}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Linha de Meio Campo */}
+            <div className="field-row">
+              {FORMACOES[formacao].meio.map((pos, i) => {
+                const key = `meio_${i}`;
+                const j = titulares[key];
+                return (
+                  <div key={key} className={`player-slot ${j ? 'filled' : ''}`} onClick={() => abrirSorteioParaSlot('titular', key, pos)}>
+                    <span className="pos-tag">{pos}</span>
+                    {j ? <><span className="p-name">{j.name}</span><span className="p-cost">{j.cost}M</span></> : <span>+</span>}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Linha de Defesa */}
+            <div className="field-row">
+              {FORMACOES[formacao].defesa.map((pos, i) => {
+                const key = `defesa_${i}`;
+                const j = titulares[key];
+                return (
+                  <div key={key} className={`player-slot ${j ? 'filled' : ''}`} onClick={() => abrirSorteioParaSlot('titular', key, pos)}>
+                    <span className="pos-tag">{pos}</span>
+                    {j ? <><span className="p-name">{j.name}</span><span className="p-cost">{j.cost}M</span></> : <span>+</span>}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Goleiro */}
+            <div className="field-row">
+              {FORMACOES[formacao].goleiro.map((pos, i) => {
+                const key = `goleiro_${i}`;
+                const j = titulares[key];
+                return (
+                  <div key={key} className={`player-slot ${j ? 'filled' : ''}`} onClick={() => abrirSorteioParaSlot('titular', key, pos)}>
+                    <span className="pos-tag">{pos}</span>
+                    {j ? <><span className="p-name">{j.name}</span><span className="p-cost">{j.cost}M</span></> : <span>+</span>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* RESERVAS ABAIXO DO CAMPO */}
+          <div className="substitutes-container">
+            <div className="substitutes-title">Banco de Reservas (5 Vagas)</div>
+            <div className="substitutes-grid">
+              {reservas.map((j, idx) => {
+                const posSugerida = idx === 0 ? 'GOL' : idx < 3 ? 'ZAG' : idx === 3 ? 'MEI' : 'ATA';
+                return (
+                  <div key={`reserva_${idx}`} className={`player-slot ${j ? 'filled' : ''}`} onClick={() => abrirSorteioParaSlot('reserva', idx, posSugerida)}>
+                    <span className="pos-tag">{j ? j.position : posSugerida}</span>
+                    {j ? <><span className="p-name">{j.name}</span><span className="p-cost">{j.cost}M</span></> : <span>+</span>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <button className="btn-primary" style={{ marginTop: '16px' }} onClick={verificarFimDoDraft}>
+            Pronto / Finalizar Elenco
+          </button>
         </div>
       )}
 
-      {/* TELA 3: MENU PRINCIPAL */}
+      {/* TELA 3: SUCESSO */}
       {faseJogo === 'MENU_PRINCIPAL' && (
         <div className="home-hero">
           <span className="home-tag">Draft Concluído</span>
-          <h1 className="home-title">Time Montado!</h1>
-          <p className="home-sub">Prepare-se para disputar a Copa Oficial.</p>
-          
-          <button className="btn-primary" onClick={() => setFaseJogo('SELECAO_LIGA')}>
+          <h1 className="home-title">Time Pronto!</h1>
+          <button className="btn-primary" onClick={() => { setTitulares({}); setReservas(Array(5).fill(null)); setOrcamento(ORCAMENTO_INICIAL); setFaseJogo('SELECAO_LIGA'); }}>
             Jogar Novamente
           </button>
         </div>
       )}
-    </div>
-  );
-}
 
-export default App;
+      {/* MODAL DE ESCOLHA DE JOGADORES */}
+      {modalAberto && (
+        <div className="draft-options-overlay">
+          <div className="draft-modal">
+            <button className="btn-close-modal" onClick={() => setModalAberto(false)}>X</button>
+            <h3>Sorteio: {slotAlvo?.posicao}</h3>
+            <p style={{fontSize: '13px', color: 'var(--nfc-muted)'}}>Contrate um atleta para esta vaga:</p>
+            
+            {opcoesSorteadas.map((jogador) => (
+              <div key={jogador.id} className="option-card" onClick={() => escolherJogador(jogador)}>
+                <div>
+                  <strong style={{color: '#fff'}}>{jogador.name}</strong>
+                  <div style={{fontSize: '12px', color: 'var(--nfc-muted)'}}>Rating: {jogador.rating}</div>
+                </div>
