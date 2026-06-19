@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { gerarCopaAdversarios, PLAYERS_DB } from './motor'; // Certifique-se de importar o DB
-import './App.css';
+const { useState } = React; // Pega o useState direto do React global injetado pelo CDN
 
 const FORMACOES = {
   '4-4-2': { ataque: ['ATA', 'ATA'], meio: ['MEI', 'MEI', 'MEI', 'MEI'], defesa: ['ZAG', 'ZAG', 'ZAG', 'ZAG'], goleiro: ['GOL'] },

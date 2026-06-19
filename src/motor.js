@@ -1,4 +1,4 @@
-export const PLAYERS_DB = {
+const PLAYERS_DB = {
     "Juventus-92": [
         { id: 1, name: "Roberto Baggio", cost: 25, rating: 94, pos: "ATA" },
         { id: 2, name: "Stefano Tacconi", cost: 15, rating: 85, pos: "GOL" },
@@ -13,7 +13,7 @@ export const PLAYERS_DB = {
     ]
 };
 
-export function obterModificadorSetinha(moral) {
+function obterModificadorSetinha(moral) {
     if (moral >= 85) return { icone: "🡡", cor: "text-red-500", mod: 4 };
     if (moral >= 65) return { icone: "🡮", cor: "text-orange-400", mod: 2 };
     if (moral >= 45) return { icone: "🡢", cor: "text-green-400", mod: 0 };
@@ -21,7 +21,7 @@ export function obterModificadorSetinha(moral) {
     return { icone: "🡫", cor: "text-purple-500", mod: -5 };
 }
 
-export function executarSorteioDraft(orcamentoAtual, todosOsJogadores, atualizarTela, finalizarSorteio) {
+function executarSorteioDraft(orcamentoAtual, todosOsJogadores, atualizarTela, finalizarSorteio) {
     let contador = 0;
     const intervalo = setInterval(() => {
         const jAleatorio = todosOsJogadores[Math.floor(Math.random() * todosOsJogadores.length)];
@@ -34,7 +34,7 @@ export function executarSorteioDraft(orcamentoAtual, todosOsJogadores, atualizar
     }, 100);
 }
 
-export function gerarCopaAdversarios(listaJogadoresGlobal, ligaSelecionada, timeUsuarioNome = "Nostalgia FC") {
+function gerarCopaAdversarios(listaJogadoresGlobal, ligaSelecionada, timeUsuarioNome = "Nostalgia FC") {
     if (!listaJogadoresGlobal) return [];
     const jogadoresDaLiga = listaJogadoresGlobal.filter(jog => jog.liga === ligaSelecionada);
     const clubesUnicos = [...new Set(jogadoresDaLiga.map(jog => jog.clube || jog.time))];
@@ -50,7 +50,7 @@ export function gerarCopaAdversarios(listaJogadoresGlobal, ligaSelecionada, time
         }));
 }
 
-export function simularMinutoPartida(minuto, dadosJogo, setDadosJogo, acaoNarracao) {
+function simularMinutoPartida(minuto, dadosJogo, setDadosJogo, acaoNarracao) {
     let { meuPlacar, placarRival } = dadosJogo;
     let textoNarracao = `⏱️ ${minuto}' - Bola rolando.`;
     let chanceMinuto = Math.random() * 100;
@@ -74,7 +74,7 @@ export function simularMinutoPartida(minuto, dadosJogo, setDadosJogo, acaoNarrac
     acaoNarracao(textoNarracao);
 }
 
-export function finalizarCampeonato(dadosJogo, acaoNarracao) {
+function finalizarCampeonato(dadosJogo, acaoNarracao) {
     dadosJogo.titulares.forEach(j => {
         if (dadosJogo.meuPlacar > dadosJogo.placarRival) j.moral = Math.min(100, j.moral + 10);
         else j.moral = Math.max(0, j.moral - 12);
