@@ -1,4 +1,4 @@
-const bancoJogadores = [
+export const PLAYERS_DB = {
     // ==========================================
     // JUVENTUS 1993
     // ==========================================
@@ -862,4 +862,4 @@ const bancoJogadores = [
     { name: "Raúl Albiol", posicao: "ZAG", time: "Valencia", liga: "La Liga", temporada: "06", rating: 78, cost: 55 },
     { name: "Vicente Rodríguez", posicao: "MEI", time: "Valencia", liga: "La Liga", temporada: "06", rating: 82, cost: 70 },
     { name: "Mista", posicao: "ATA", time: "Valencia", liga: "La Liga", temporada: "06", rating: 79, cost: 60 }
-];
+};
