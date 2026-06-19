@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { gerarCopaAdversarios } from './motor'; 
 import './App.css';
 
-const ORCAMENTO_INICIAL = 100;
-
-// Definição das posições por formação técnica
+// 1. DECLARAÇÃO GLOBAL (Fora da função App)
 const FORMACOES = {
   '4-4-2': {
     ataque: ['ATA', 'ATA'],
@@ -20,17 +18,17 @@ const FORMACOES = {
   }
 };
 
+const ORCAMENTO_INICIAL = 100;
+
 function App() {
   const [faseJogo, setFaseJogo] = useState('SELECAO_LIGA');
   const [ligaSelecionada, setLigaSelecionada] = useState(null);
   const [orcamento, setOrcamento] = useState(ORCAMENTO_INICIAL);
   const [formacao, setFormacao] = useState('4-4-2');
   
-  // Estrutura de Elenco em aberto
   const [titulares, setTitulares] = useState({});
   const [reservas, setReservas] = useState(Array(5).fill(null));
 
-  // Controle do Modal de Escolha do Jogador
   const [modalAberto, setModalAberto] = useState(false);
   const [slotAlvo, setSlotAlvo] = useState(null); 
   const [opcoesSorteadas, setOpcoesSorteadas] = useState([]);
